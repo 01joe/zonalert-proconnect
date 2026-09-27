@@ -1,0 +1,49 @@
+# ═══════════════════════════════════════════════════
+# SÉCURITÉ — NE JAMAIS COMMITER CES FICHIERS
+# ═══════════════════════════════════════════════════
+
+# Variables d'environnement (SECRETS)
+.env
+.env.*
+!.env.example
+
+# Clés Firebase / Google Cloud (CRITIQUE)
+*.json.key
+*serviceAccount*.json
+*service-account*.json
+*firebase-adminsdk*.json
+*firebase-admin*.json
+*-firebase-*.json
+src/config/*.json
+google-cloud-key*.json
+credentials.json
+key.json
+
+# Keystore Android
+*.keystore
+*.jks
+keystore.properties
+
+# ═══════════════════════════════════════════════════
+# NODE / BUILD
+# ═══════════════════════════════════════════════════
+node_modules/
+dist/
+build/
+
+# ═══════════════════════════════════════════════════
+# LOGS
+# ═══════════════════════════════════════════════════
+*.log
+npm-debug.log*
+logs/
+
+# ═══════════════════════════════════════════════════
+# OS / IDE
+# ═══════════════════════════════════════════════════
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+coverage/
