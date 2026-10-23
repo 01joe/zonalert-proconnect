@@ -1,10 +1,49 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+
+export function registerBaseRoutes(app: INestApplication): void {
+  const nodeEnv = process.env.NODE_ENV ?? 'development';
+  const httpAdapter = app.getHttpAdapter();
+
+  const sendHealth = (res: any): void => {
+    res.status(200).json({
+      status: 'ok',
+      service: 'ZonAlert Backend',
+      env: nodeEnv,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  httpAdapter.get('/', (_req: any, res: any) => {
+    sendHealth(res);
+  });
+
+  httpAdapter.head('/', (_req: any, res: any) => {
+    res.status(200).end();
+  });
+
+  httpAdapter.get('/health', (_req: any, res: any) => {
+    sendHealth(res);
+  });
+
+  httpAdapter.head('/health', (_req: any, res: any) => {
+    res.status(200).end();
+  });
+
+  httpAdapter.get('/favicon.ico', (_req: any, res: any) => {
+    res.status(204).end();
+  });
+}
 
 async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
@@ -14,15 +53,11 @@ async function bootstrap(): Promise<void> {
   });
 
   const configService = app.get(ConfigService);
+  const nodeEnv = process.env.NODE_ENV ?? 'development';
   // Railway injecte PORT automatiquement — priorité absolue
   const port = parseInt(process.env.PORT ?? '3000', 10);
-  const nodeEnv = process.env.NODE_ENV ?? 'development';
 
-  // ── Health check (/health) ─────────────────────────────────────────────────
-  const httpAdapter = app.getHttpAdapter();
-  httpAdapter.get('/health', (_req: any, res: any) => {
-    res.json({ status: 'ok', env: nodeEnv, timestamp: new Date().toISOString() });
-  });
+  registerBaseRoutes(app);
 
   // ── Helmet ─────────────────────────────────────────────────────────────────
   app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }));
@@ -83,4 +118,6 @@ async function bootstrap(): Promise<void> {
   logger.log(`🚀 ZonAlert Backend démarré — port ${port} [${nodeEnv}]`);
 }
 
-bootstrap();
+if (require.main === module) {
+  void bootstrap();
+}
