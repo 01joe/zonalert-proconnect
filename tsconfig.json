@@ -19,9 +19,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "moduleResolution": "node",
-    "types": ["node", "jest"],
+    "types": ["node"],
     "paths": {
       "@/*": ["src/*"]
     }
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts", "**/*.e2e-spec.ts"]
 }
